@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Tessel Web App</title>
+</head>
+<body>
+  <h1>Rotate Lisa's Petcube!</h1>
+  <ul>
+    <li>
+      <button class="position-minus-button">-</button>
+      <button class="position-plus-button">+</button>
+      Position: <span class="position-status">0</span>
+    </li>
+  </ul>
+  <script type="text/javascript">
+
+      var minusBtn = document.querySelectorAll('.position-minus-button');
+      var plusBtn = document.querySelectorAll('.position-plus-button');
+
+
+      Array.prototype.forEach.call(minusBtn, function (minus) {
+        minus.addEventListener('click', decrementPosition);
+      });
+      Array.prototype.forEach.call(plusBtn, function (plus) {
+        plus.addEventListener('click', incrementPosition);
+      });
+
+      function decrementPosition(event) {
+        var button = event.target;
+
+        var statusNode = button.parentNode.querySelector('.position-status'); // The sibling status <span> to update
+        var positionIndex = Number(statusNode.textContent) - 1;
+        console.log(positionIndex);
+
+        // Create a new XHR for communicating requests to our Tessel server
+        var req = new XMLHttpRequest();
+
+        // Open a GET request to '/leds/:index'
+        req.open('GET', '/move/' + positionIndex);
+
+        // Once the request gets a successful response, update that statusNode with the status of the LED.
+        req.onload = function(e) {
+          if (req.readyState == 4 && req.status == 200) {
+            statusNode.textContent = positionIndex.toString();
+          } else {
+            console.log('Error', e); // If something went wrong, log that event to the console.
+          }
+        }
+        req.send(); // Send our request to the server
+      }
+
+      function incrementPosition(event) {
+        var button = event.target;
+
+        var statusNode = button.parentNode.querySelector('.position-status'); // The sibling status <span> to update
+        var positionIndex = Number(statusNode.textContent) + 1;
+        console.log(positionIndex);
+
+        // Create a new XHR for communicating requests to our Tessel server
+        var req = new XMLHttpRequest();
+
+        // Open a GET request to '/leds/:index'
+        req.open('GET', '/move/' + positionIndex);
+
+        // Once the request gets a successful response, update that statusNode with the status of the LED.
+        req.onload = function(e) {
+          console.log("on load");
+          if (req.readyState == 4 && req.status == 200) {
+            console.log("hello change text");
+            statusNode.textContent = positionIndex
+          } else {
+            console.log('Error', e); // If something went wrong, log that event to the console.
+          }
+        }
+        req.send(); // Send our request to the server
+      }
+    </script>
+</body>
+</html>
